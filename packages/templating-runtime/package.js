@@ -1,0 +1,62 @@
+Package.describe({
+  name: 'templating-runtime',
+  summary: "Runtime for compiled .html files",
+  version: '2.0.1',
+  git: 'https://github.com/meteor/blaze.git',
+  documentation: null
+});
+
+Package.onUse(function (api) {
+
+  // XXX would like to do the following only when the first html file
+  // is encountered
+
+  // Export Template to both client and server — server needs it for SSG rendering.
+  api.export('Template');
+
+  api.addFiles('templating.js');
+
+  // html_scanner.js emits client code that calls Meteor.startup and
+  // Blaze, so anybody using templating (eg apps) need to implicitly use
+  // 'meteor' and 'blaze'.
+  api.use([
+    'blaze@3.0.0',
+    'spacebars@2.0.0',
+    'ecmascript@0.16.9'
+  ]);
+  api.imply([
+    'meteor',
+    'blaze@3.0.0',
+    'spacebars@2.0.0'
+  ]);
+
+  // to be able to compile dynamic.html. this compiler is used
+  // only inside this package and it should not be implied to not
+  // conflict with other packages providing .html compilers.
+  api.use('templating-compiler@2.0.0');
+
+  // dynamic template support is client-only (requires DOM)
+  api.addFiles([
+    'dynamic.html',
+    'dynamic.js'
+  ], 'client');
+});
+
+Package.onTest(function (api) {
+  api.use([
+    'tinytest',
+    'test-helpers',
+    'reactive-var',
+    'tracker'
+  ]);
+
+  api.use([
+    'templating-runtime',
+    'templating-compiler@2.0.0'
+  ]);
+
+  api.addFiles([
+    'dynamic_tests.html',
+    'dynamic_tests.js'
+  ], 'client');
+});

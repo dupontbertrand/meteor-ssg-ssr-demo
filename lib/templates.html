@@ -1,0 +1,166 @@
+<!-- ============================================================ -->
+<!-- LAYOUT                                                       -->
+<!-- ============================================================ -->
+
+<template name="mainLayout">
+  <div class="layout">
+    <nav class="topnav">
+      <a href="/" class="brand">MyShop</a>
+      <div class="nav-links">
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+        <a href="/articles/oak-chair">Oak Chair</a>
+        <a href="/articles/walnut-table">Walnut Table</a>
+        <a href="/articles/copper-lamp">Copper Lamp</a>
+        <a href="/articles/pine-shelf">Pine Shelf</a>
+        <a href="/articles/leather-armchair">Leather Armchair</a>
+        <a href="/stocks">Stocks</a>
+      </div>
+    </nav>
+    <div class="content">
+      {{> Template.dynamic template=content}}
+    </div>
+  </div>
+</template>
+
+<!-- ============================================================ -->
+<!-- HOME                                                          -->
+<!-- ============================================================ -->
+
+<template name="home">
+  <div class="page-header">
+    <h1>MyShop — SSG / SSR / Meteor Demo</h1>
+    <p>This app demonstrates 3 rendering modes:</p>
+  </div>
+  <div class="cards">
+    <div class="card card-ssg">
+      <h3>SSG — Static Site Generation</h3>
+      <p>Pages <strong>/about</strong> and <strong>/contact</strong></p>
+      <p>Rendered once at startup. HTML visible in view-source. Ultra-fast.</p>
+      <a href="/about" class="btn">View /about</a>
+    </div>
+    <div class="card card-ssr">
+      <h3>SSR — Server-Side Rendering</h3>
+      <p>Pages <strong>/articles/:slug</strong></p>
+      <p>Rendered at each request with fresh data from MongoDB. Edit the description, refresh: it's up to date.</p>
+      <a href="/articles/oak-chair" class="btn">View /articles/oak-chair</a>
+    </div>
+    <div class="card card-meteor">
+      <h3>Meteor Reactive — DDP</h3>
+      <p>Page <strong>/stocks</strong></p>
+      <p>Real-time updates via DDP. Change a stock value: the page updates instantly, no refresh needed.</p>
+      <a href="/stocks" class="btn">View /stocks</a>
+    </div>
+  </div>
+</template>
+
+<!-- ============================================================ -->
+<!-- SSG PAGES — About & Contact                                   -->
+<!-- ============================================================ -->
+
+<template name="about">
+  <div class="page-header">
+    <span class="badge badge-ssg">SSG</span>
+    <h1>{{title}}</h1>
+  </div>
+  <p>{{description}}</p>
+  <p>This page is pre-rendered at server startup (SSG). The HTML is in the initial DOM — check with F12 &gt; Elements or view-source.</p>
+  <p><strong>No admin panel</strong>: the content is static and never changes without restarting the server.</p>
+</template>
+
+<template name="contact">
+  <div class="page-header">
+    <span class="badge badge-ssg">SSG</span>
+    <h1>{{title}}</h1>
+  </div>
+  <p>{{email}}</p>
+  <p>{{phone}}</p>
+  <p>{{address}}</p>
+  <p>This page is also pre-rendered at startup (SSG). Static content, visible in view-source.</p>
+</template>
+
+<!-- ============================================================ -->
+<!-- SSR PAGE — Product detail                                     -->
+<!-- ============================================================ -->
+
+<template name="productPage">
+  <div class="split-layout">
+    <div class="split-left">
+      <div class="page-header">
+        <span class="badge badge-ssr">SSR</span>
+        <h1>{{title}}</h1>
+      </div>
+      <div class="product-detail">
+        <img src="{{image}}" alt="{{title}}" class="product-image">
+        <p class="product-price">{{price}} &dollar;</p>
+        <p class="product-description">{{description}}</p>
+        <p class="ssr-notice">This page is server-rendered at each request (SSR). The HTML is in the initial DOM — check with F12. Edit the description on the right, then refresh the page to see the change.</p>
+      </div>
+    </div>
+    <div class="split-right">
+      <h3>Admin — Edit this product</h3>
+      <p class="admin-hint">Changes are saved to MongoDB. Refresh the page to see the update on the public side (SSR).</p>
+      <label>Description:</label>
+      <textarea class="input-description" rows="4">{{description}}</textarea>
+      <label>Price:</label>
+      <input type="number" class="input-price" value="{{price}}">
+      <button class="btn btn-save">Save</button>
+      <div class="save-status"></div>
+    </div>
+  </div>
+</template>
+
+<!-- ============================================================ -->
+<!-- METEOR REACTIVE PAGE — Stocks                                 -->
+<!-- ============================================================ -->
+
+<template name="stocksPage">
+  <div class="split-layout">
+    <div class="split-left">
+      <div class="page-header">
+        <span class="badge badge-meteor">Meteor Reactive</span>
+        <h1>Real-time Inventory</h1>
+      </div>
+      <p>This page uses standard Meteor rendering: data is synchronized in real-time via DDP. Change a stock value on the right — the update is <strong>instant</strong>, no refresh needed.</p>
+      <table class="stock-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each stocks}}
+            <tr class="{{stockClass quantity}}">
+              <td>{{productTitle}}</td>
+              <td class="stock-qty">{{quantity}}</td>
+              <td>{{stockStatus quantity}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+    <div class="split-right">
+      <h3>Admin — Edit inventory</h3>
+      <p class="admin-hint">Changes propagate instantly via DDP. No refresh needed.</p>
+      {{#each stocks}}
+        <div class="stock-control">
+          <label>{{productTitle}}:</label>
+          <input type="number" class="input-stock" data-slug="{{productSlug}}" value="{{quantity}}">
+        </div>
+      {{/each}}
+    </div>
+  </div>
+</template>
+
+<!-- ============================================================ -->
+<!-- 404                                                           -->
+<!-- ============================================================ -->
+
+<template name="notFound">
+  <div class="page-header">
+    <h1>404 — Page Not Found</h1>
+  </div>
+  <p><a href="/">Back to home</a></p>
+</template>

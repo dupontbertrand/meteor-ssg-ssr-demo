@@ -1,9 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import { Products, Stocks } from '../lib/collections.js';
 
 import './main.html';
+import '../lib/templates.html';
+import '../lib/routes.js';
 import '../lib/methods.js';
 
 // =============================================

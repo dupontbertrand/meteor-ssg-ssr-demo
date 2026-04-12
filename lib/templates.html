@@ -97,16 +97,20 @@
         <p class="ssr-notice">This page is server-rendered at each request (SSR). The HTML is in the initial DOM — check with F12. Edit the description on the right, then refresh the page to see the change.</p>
       </div>
     </div>
-    <div class="split-right">
-      <h3>Admin — Edit this product</h3>
-      <p class="admin-hint">Changes are saved to MongoDB. Refresh the page to see the update on the public side (SSR).</p>
-      <label>Description:</label>
-      <textarea class="input-description" rows="4">{{description}}</textarea>
-      <label>Price:</label>
-      <input type="number" class="input-price" value="{{price}}">
-      <button class="btn btn-save">Save</button>
-      <div class="save-status"></div>
-    </div>
+    {{> productAdmin}}
+  </div>
+</template>
+
+<template name="productAdmin">
+  <div class="split-right">
+    <h3>Admin — Edit this product</h3>
+    <p class="admin-hint">Changes are saved to MongoDB. Refresh the page to see the update on the public side (SSR).</p>
+    <label>Description:</label>
+    <textarea class="input-description" rows="4">{{adminDescription}}</textarea>
+    <label>Price:</label>
+    <input type="number" class="input-price" value="{{adminPrice}}">
+    <button class="btn btn-save">Save</button>
+    <div class="save-status"></div>
   </div>
 </template>
 

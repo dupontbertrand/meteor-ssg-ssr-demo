@@ -289,7 +289,8 @@ WebApp.connectHandlers.use(async function staticRenderMiddleware(req, res, next)
   // 1. Try SSG cache first (fast path)
   const cached = cache.get(path);
   if (cached) {
-    req.dynamicBody = (req.dynamicBody || '') + cached.body;
+    req.dynamicBody = (req.dynamicBody || '') +
+      '<div data-static-render="ssg">' + cached.body + '</div>';
     if (cached.head) {
       req.dynamicHead = (req.dynamicHead || '') + cached.head;
     }
@@ -303,7 +304,8 @@ WebApp.connectHandlers.use(async function staticRenderMiddleware(req, res, next)
       if (params) {
         try {
           const { body, head } = await StaticRender._renderSSR(route, path, params);
-          req.dynamicBody = (req.dynamicBody || '') + body;
+          req.dynamicBody = (req.dynamicBody || '') +
+            '<div data-static-render="ssr">' + body + '</div>';
           if (head) {
             req.dynamicHead = (req.dynamicHead || '') + head;
           }

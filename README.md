@@ -153,4 +153,36 @@ Open http://localhost:3000
 ## Requirements
 
 - Meteor 3.4+
-- No rspack (classic Meteor build — rspack doesn't support `.html` imports server-side yet)
+- Classic Meteor build, OR rspack with a one-line patch (see below)
+
+## Rspack compatibility
+
+This demo uses the classic Meteor build. Rspack works too with a tiny patch to `@meteorjs/rspack/rspack.config.js`.
+
+**The problem**: on the server, rspack has no rule for `.html` files. When `server/main.js` does `import '../lib/templates.html'`, rspack tries to parse it as JavaScript and crashes. On the client, an `ignore-loader` rule already exists — the fix is to add the same rule on the server.
+
+**The patch** (in `@meteorjs/rspack/rspack.config.js`, ~line 596):
+
+```js
+// BEFORE
+module: {
+  rules: [swcConfigRule, ...extraRules],
+  parser: { javascript: { dynamicImportMode: 'eager' } },
+},
+
+// AFTER
+module: {
+  rules: [
+    swcConfigRule,
+    ...(Meteor.isBlazeEnabled
+      ? [{ test: /\.html$/i, loader: 'ignore-loader' }]
+      : []),
+    ...extraRules,
+  ],
+  parser: { javascript: { dynamicImportMode: 'eager' } },
+},
+```
+
+This mirrors the existing client config. Guarded by `Meteor.isBlazeEnabled`, so zero impact on React/Vue/Svelte apps.
+
+Tested with: SSG, SSR, DDP, Meteor methods, HMR, production build, vanilla Blaze apps without SSG, and React apps.

@@ -1,5 +1,7 @@
 <head>
-  <title>MyShop</title>
+  <!-- No static <title>: static-render appends staticHead() output after this
+       head, so a static title would come first and win. Titles are set by
+       staticHead() on pre-rendered routes and by client/main.js elsewhere. -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 

@@ -9,6 +9,25 @@ import '../lib/templates.html';
 import '../lib/routes.js';
 import '../lib/methods.js';
 
+// main.html carries no static <title>, because static-render appends
+// staticHead() output after the app's <head> rather than merging into it — a
+// static title would come first and browsers would show it instead of the
+// pre-rendered one. Titles are therefore owned here for every route, which is
+// also what keeps them correct across client-side navigation.
+const TITLES = {
+  home: 'MyShop',
+  about: 'About | MyShop',
+  contact: 'Contact | MyShop',
+  stocks: 'Stocks | MyShop',
+  notFound: 'Not found | MyShop',
+};
+
+FlowRouter.triggers.enter([(context) => {
+  const title = TITLES[context.route.name];
+  // productPage sets its own title once the product has loaded.
+  if (title) document.title = title;
+}]);
+
 // Remove SSR/SSG pre-rendered content once the client takes over.
 Meteor.startup(() => {
   document.querySelectorAll('[data-static-render]').forEach(el => el.remove());

@@ -100,15 +100,23 @@ Template.productAdmin.helpers({
 });
 
 Template.productAdmin.events({
-  'click .btn-save'(event, instance) {
+  async 'click .btn-save'(event, instance) {
     const slug = FlowRouter.getParam('slug');
     const newDescription = instance.find('.input-description').value;
     const newPrice = instance.find('.input-price').value;
-
-    Meteor.callAsync('products.updateDescription', slug, newDescription);
-    Meteor.callAsync('products.updatePrice', slug, Number(newPrice));
-
     const status = instance.find('.save-status');
+
+    // The methods validate their arguments, so a save can genuinely fail —
+    // report that instead of announcing success unconditionally.
+    try {
+      await Meteor.callAsync('products.updateDescription', slug, newDescription);
+      await Meteor.callAsync('products.updatePrice', slug, Number(newPrice));
+    } catch (e) {
+      status.textContent = `Could not save: ${e.reason || e.message}`;
+      status.classList.add('visible');
+      return;
+    }
+
     status.textContent = 'Saved! Refresh the page (F5) to see the change on the public side.';
     status.classList.add('visible');
     setTimeout(() => status.classList.remove('visible'), 5000);
@@ -142,9 +150,14 @@ Template.stocksPage.helpers({
 });
 
 Template.stocksPage.events({
-  'change .input-stock'(event) {
+  async 'change .input-stock'(event) {
     const slug = event.currentTarget.dataset.slug;
     const newQty = event.currentTarget.value;
-    Meteor.callAsync('stocks.updateQuantity', slug, Number(newQty));
+    try {
+      await Meteor.callAsync('stocks.updateQuantity', slug, Number(newQty));
+    } catch (e) {
+      // eslint-disable-next-line no-alert
+      console.error('[Demo] stock update rejected:', e.reason || e.message);
+    }
   },
 });

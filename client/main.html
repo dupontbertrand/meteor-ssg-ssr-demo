@@ -1,7 +1,9 @@
 <head>
-  <!-- No static <title>: static-render appends staticHead() output after this
-       head, so a static title would come first and win. Titles are set by
-       staticHead() on pre-rendered routes and by client/main.js elsewhere. -->
+  <!-- Deliberately no static title element here: static-render appends
+       staticHead() output after this head rather than merging into it, so a
+       static title would come first and browsers would show it. Titles come
+       from staticHead() on pre-rendered routes, and from client/main.js
+       elsewhere. -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
